@@ -1,0 +1,106 @@
+/* Định dạng chung toàn trang */
+body {
+    background-color: #f6f8fa;
+    font-family: 'Inter', sans-serif;
+    color: #333333;
+}
+
+/* Tinh chỉnh thanh Navbar */
+.navbar {
+    padding: 0.75rem 0;
+}
+.navbar-nav .nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: color 0.2s ease;
+}
+.navbar-nav .nav-link.active {
+    color: #fff !important;
+    border-bottom: 2px solid #0d6efd;
+}
+
+/* Thanh tìm kiếm */
+.container-search-logout {
+    min-width: 320px;
+}
+
+/* Tiêu đề chính */
+.text-secondary-heading {
+    color: #212529;
+    font-size: 1.75rem;
+}
+.title-underline {
+    width: 60px;
+    height: 4px;
+    background-color: #0d6efd;
+    border-radius: 2px;
+    margin-top: 8px;
+}
+
+/* Thiết kế thẻ Card bài viết (Dùng cho phần đổ dữ liệu bằng JS) */
+.blog-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.blog-card-img {
+    height: 160px;
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+}
+
+.blog-card-body {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.blog-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.blog-author {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.blog-excerpt {
+    color: #495057;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    /* Giới hạn text trong 3 dòng nếu quá dài */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.blog-card-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f3f5;
+}
