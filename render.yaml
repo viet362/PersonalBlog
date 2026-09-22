@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: personal-blog
+    env: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://mysql-22176-buivietbacn01-1ff7.a.aivencloud.com:10055/personal-blog?sslMode=REQUIRED&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+      - key: SPRING_DATASOURCE_USERNAME
+        value: avnadmin
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false # Nhập password trên Render Dashboard để bảo mật

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang chủ | Personal Blog</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/blog/style/home.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-white d-flex align-items-center" href="/blog/home.html">
+      <span class="me-2">📝</span> Personal Blog
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a id="navAllBlogs" class="nav-link active" href="javascript:void(0)" onclick="loadHomeBlogs()">Tất cả bài viết</a>
+        </li>
+        <li class="nav-item">
+          <a id="navMyBlogs" class="nav-link" href="javascript:void(0)" onclick="loadMyBlogs()">Bài viết của tôi</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/user/profile.html">Chỉnh sửa tài khoản</a>
+        </li>
+      </ul>
+
+      <div class="d-flex gap-2 align-items-center container-search-logout flex-wrap">
+        <div class="input-group input-group-sm" style="max-width: 320px;">
+          <select id="searchType" class="form-select bg-light" style="max-width: 105px;">
+            <option value="title" selected>Tiêu đề</option>
+            <option value="author">Tác giả</option>
+            <option value="content">Nội dung</option>
+          </select>
+
+          <input id="searchKeyword" class="form-control" type="search" placeholder="Từ khóa..." aria-label="Search" onkeypress="if(event.key==='Enter') searchBlog()">
+
+          <button class="btn btn-primary" type="button" onclick="searchBlog()">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <span id="userInfo" class="badge bg-secondary text-light py-2 px-3 fw-normal d-none d-md-inline-block"></span>
+          <button class="btn btn-outline-danger btn-sm px-3" onclick="logout()">Đăng xuất</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+<main class="container my-5">
+  <div class="row mb-4 align-items-center">
+    <div class="col-sm-8">
+      <h2 id="sectionTitle" class="fw-bold text-secondary-heading m-0">Bài viết mới nhất</h2>
+      <div class="title-underline"></div>
+    </div>
+    <div class="col-sm-4 text-sm-end mt-3 mt-sm-0">
+      <button class="btn btn-primary px-4 fw-medium shadow-sm" onclick="createBlog()">
+        <i class="fas fa-plus me-1"></i> Viết bài mới
+      </button>
+    </div>
+  </div>
+
+  <div id="show" class="row g-4">
+    <!-- Nội dung nạp động qua JavaScript -->
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/blog/JS/home.js"></script>
+<script src="/blog/JS/detail.js"></script>
+<script src="/blog/JS/myBlog.js"></script>
+<script src="/blog/JS/add.js"></script>
+<script src="/blog/JS/edit.js"></script>
+
+<script>
+  window.currentTab = 'home';
+
+  window.onload = function () {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const userInfoEl = document.getElementById("userInfo");
+    if (user && user.name) {
+      userInfoEl.innerText = "👋 " + user.name;
+    } else {
+      userInfoEl.classList.add("d-none");
+    }
+    loadHomeBlogs();
+  };
+
+  function loadHomeBlogs() {
+    window.currentTab = 'home';
+    document.querySelectorAll('.navbar-nav .nav-link').forEach(el => el.classList.remove('active'));
+    const allBlogTab = document.getElementById('navAllBlogs');
+    if (allBlogTab) allBlogTab.classList.add('active');
+
+    const titleEl = document.getElementById("sectionTitle");
+    if (titleEl) titleEl.innerText = "Bài viết mới nhất";
+
+    const showDiv = document.getElementById("show");
+    showDiv.innerHTML = `
+      <div class="col-12 text-center my-5 py-4">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="text-muted mt-2 small">Đang tải dữ liệu bài viết...</div>
+      </div>`;
+
+    axios.get("/api/blogs")
+      .then(res => render(res.data))
+      .catch(err => {
+        console.error("Lỗi tải bài viết:", err);
+        showDiv.innerHTML = `
+          <div class="col-12 text-center my-5 text-danger">
+            <i class="fa-solid fa-triangle-exclamation fa-2x mb-2"></i>
+            <p>Không thể kết nối đến hệ thống máy chủ. Vui lòng thử lại sau!</p>
+          </div>`;
+      });
+  }
+
+  function searchBlog() {
+    const type = document.getElementById("searchType").value;
+    const keyword = document.getElementById("searchKeyword").value.trim();
+
+    let url = "/api/blogs";
+    let paramsObj = {};
+
+    if (keyword) {
+      if (type === "title") {
+        url += "/search/title";
+        paramsObj = { title: keyword };
+      } else if (type === "author") {
+        url += "/search/author";
+        paramsObj = { name: keyword };
+      } else if (type === "content") {
+        url += "/search/content";
+        paramsObj = { content: keyword };
+      }
+    }
+
+    const showDiv = document.getElementById("show");
+    showDiv.innerHTML = `
+      <div class="col-12 text-center my-5 py-4">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="text-muted mt-2 small">Đang tìm kiếm...</div>
+      </div>`;
+
+    axios.get(url, { params: paramsObj })
+      .then(res => render(res.data))
+      .catch(err => {
+        console.error("Lỗi tìm kiếm:", err);
+        showDiv.innerHTML = `
+          <div class="col-12 text-center my-5 text-danger">
+            <p>Đã xảy ra lỗi trong quá trình tìm kiếm!</p>
+          </div>`;
+      });
+  }
+
+  function logout() {
+    if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+      localStorage.removeItem("user");
+      window.location.href = "/index.html";
+    }
+  }
+</script>
+
+</body>
+</html>
